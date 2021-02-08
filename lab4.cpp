@@ -19,12 +19,11 @@ Node* newElement(char* currentLine) {
 int main() {
 	//инициализация списка
 	Node* head = (Node*)malloc(sizeof(Node));
-	head->line = NULL;
-	head->next = NULL;
 	//объявление строки максимального размера
 	char currentLine[BUFSIZ];
 	//указатель на текущий элемент
 	Node* currentNode = head;
+	//ввод строк
 	printf("Enter lines of text. For exit, enter '.' at the beginning of a line\n");
 	while (fgets(currentLine, sizeof(currentLine), stdin) != NULL) {
 		if (currentLine[0] == '.')
@@ -38,12 +37,10 @@ int main() {
 	}
 	//очистка памяти
 	Node* j = NULL;
-	Node* i = head->next;
+	Node* i = head;
 	while (i != NULL) {
 		j = i->next;
-		free(i->line);
 		free(i);
 		i = j;
 	}
-	free(head);
 }
