@@ -3,62 +3,47 @@
 #include <stdio.h>
 #include <string.h>
 
-struct node {
-	char *value;
-	struct node* next;
-};
+typedef struct Node {
+	char* line;
+	Node* next;
+}Node;
 
-struct node *nodeInit(){
-	struct node *head = (struct node*)malloc(sizeof(struct node));
-	head->next = NULL;
-	head->value = NULL;
-	return head;
-}
-
-void freeNode(struct node* currentNode){
-	free(currentNode->value);
-	free(currentNode);
-	return;
-}
-
-struct node *addString(char *newLine){
-	struct node *newNode = NULL;
-	newNode = (struct node *)malloc(sizeof(struct node));
-	newNode->value = (char *)malloc(strlen(newLine) + 1);
-	strcpy(newNode->value, newLine);
+Node* newElement(char* currentLine) {
+	Node* newNode = (Node*)malloc(sizeof(Node));
 	newNode->next = NULL;
-	return(newNode);
+	newNode->line = (char*)malloc(strlen(currentLine) + 1);
+	strcpy(newNode->line, currentLine);
+	return newNode;
 }
 
-
-int main(){
-	char line[BUFSIZ];
-	struct node *head = NULL,
-			*currentNode = NULL,
-			*i = NULL;
-	//initial memory initialize
- 	head = nodeInit();
-	currentNode = head;
-	//reading lines
-	printf("Enter lines of text. To end entering, put '.' in the start of line.\n");
-	while (gets(line) != NULL) {
-        	if (line[0] == '.')
-            		break;
-        	currentNode->next = addString(line);
-        	currentNode = currentNode->next;
+int main() {
+	//инициализация списка
+	Node* head = (Node*)malloc(sizeof(Node));
+	head->line = NULL;
+	head->next = NULL;
+	//объявление строки максимального размера
+	char currentLine[BUFSIZ];
+	//указатель на текущий элемент
+	Node* currentNode = head;
+	printf("Enter lines of text. For exit, enter '.' at the beginning of a line\n");
+	while (fgets(currentLine, sizeof(currentLine), stdin) != NULL) {
+		if (currentLine[0] == '.')
+			break;
+		currentNode->next = newElement(currentLine);
+		currentNode = currentNode->next;
 	}
-	//writing lines
- 	for (i = head->next; i != NULL; i = i->next)
- 		puts(i->value);
-	i = head->next;
-	//freeing memory
-	struct node *j = NULL;
+	//печать строк
+	for (Node* i = head->next; i != NULL; i = i->next) {
+		fputs(i->line, stdout);
+	}
+	//очистка памяти
+	Node* j = NULL;
+	Node* i = head->next;
 	while (i != NULL) {
 		j = i->next;
-		freeNode(i);
-		i = NULL;
+		free(i->line);
+		free(i);
 		i = j;
 	}
 	free(head);
-	return 0;
 }
