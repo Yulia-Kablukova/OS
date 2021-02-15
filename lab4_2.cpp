@@ -27,14 +27,14 @@ int main() {
 		if (currentLine[0] == '.') {
 			break;
 		}
-      
+
 		if ((strlen(currentLine) == sizeof(currentLine) - 1) && currentLine[sizeof(currentLine) - 2] != '\n') {
 			printf("Too long!\n");
-      			break;
+			break;
 		}
     
-	    currentNode->next = newElement(currentLine);
-	    currentNode = currentNode->next;
+		currentNode->next = newElement(currentLine);
+		currentNode = currentNode->next;
 	}
   
 	for (Node* i = head->next; i != NULL; i = i->next) {
@@ -43,6 +43,7 @@ int main() {
   
 	Node* j = NULL;
 	Node* i = head;
+	
 	while (i != NULL) {
 		j = i->next;
 		free(i->line);
