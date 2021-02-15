@@ -1,4 +1,3 @@
-#include <sys/types.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -17,30 +16,38 @@ Node* newElement(char* currentLine) {
 }
 
 int main() {
-	//инициализация списка
 	Node* head = (Node*)malloc(sizeof(Node));
-	//объявление строки максимального размера
+	head->line = NULL;
+	head->next = NULL;
 	char currentLine[BUFSIZ];
-	//указатель на текущий элемент
 	Node* currentNode = head;
-	//ввод строк
 	printf("Enter lines of text. For exit, enter '.' at the beginning of a line\n");
+	int flag = 0;
 	while (fgets(currentLine, sizeof(currentLine), stdin) != NULL) {
 		if (currentLine[0] == '.')
 			break;
-		currentNode->next = newElement(currentLine);
-		currentNode = currentNode->next;
+		if ((strlen(currentLine) == sizeof(currentLine) - 1) && currentLine[sizeof(currentLine) - 2] != '\n' && flag == 0) {
+			printf("Too long!\n");
+			flag = 1;
+		}
+		else if (flag == 0) {
+			currentNode->next = newElement(currentLine);
+			currentNode = currentNode->next;
+		}
+
+		if (currentLine[strlen(currentLine) - 1] == '\n')
+			flag = 0;
 	}
-	//печать строк
 	for (Node* i = head->next; i != NULL; i = i->next) {
 		fputs(i->line, stdout);
 	}
-	//очистка памяти
 	Node* j = NULL;
-	Node* i = head;
+	Node* i = head->next;
 	while (i != NULL) {
 		j = i->next;
+		free(i->line);
 		free(i);
 		i = j;
 	}
+	free(head);
 }
