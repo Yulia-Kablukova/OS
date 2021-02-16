@@ -1,4 +1,3 @@
-#include <sys/types.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -18,11 +17,13 @@ Node* newElement(char* currentLine) {
 
 int main() {
 	Node* head = (Node*)malloc(sizeof(Node));
-	char currentLine[BUFSIZ];
+	head->next = NULL;
+	head->line = NULL;
+	char currentLine[10];
 	Node* currentNode = head;
-	
+
 	printf("Enter lines of text. For exit, enter '.' at the beginning of a line\n");
-	
+
 	while (fgets(currentLine, sizeof(currentLine), stdin) != NULL) {
 		if (currentLine[0] == '.') {
 			break;
@@ -32,22 +33,24 @@ int main() {
 			printf("Too long!\n");
 			break;
 		}
-    
+
 		currentNode->next = newElement(currentLine);
 		currentNode = currentNode->next;
+		
 	}
-  
+
 	for (Node* i = head->next; i != NULL; i = i->next) {
 		fputs(i->line, stdout);
 	}
-  
+
 	Node* j = NULL;
-	Node* i = head;
-	
+	Node* i = head->next;
+
 	while (i != NULL) {
 		j = i->next;
 		free(i->line);
 		free(i);
 		i = j;
 	}
+	free(head);
 }
