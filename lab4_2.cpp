@@ -9,14 +9,28 @@ typedef struct Node {
 
 Node* newElement(char* currentLine) {
 	Node* newNode = (Node*)malloc(sizeof(Node));
+	if (newNode == NULL){
+		printf("memory error");
+		return NULL;
+	}
 	newNode->next = NULL;
 	newNode->line = (char*)malloc(strlen(currentLine) + 1);
+	if (newNode->line == NULL){
+		printf("memory error");
+		free(newNode);
+		return NULL;
+		
+	}
 	strcpy(newNode->line, currentLine);
 	return newNode;
 }
 
 int main() {
 	Node* head = (Node*)malloc(sizeof(Node));
+	if (head == NULL){
+		printf("memory error");
+		return;
+	}
 	head->next = NULL;
 	head->line = NULL;
 	char currentLine[10];
@@ -35,6 +49,9 @@ int main() {
 		}
 
 		currentNode->next = newElement(currentLine);
+		if (currentNode->next == NULL){
+			break;
+		}
 		currentNode = currentNode->next;
 		
 	}
