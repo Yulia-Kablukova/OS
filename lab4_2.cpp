@@ -29,7 +29,7 @@ int main() {
 	Node* head = (Node*)malloc(sizeof(Node));
 	if (head == NULL){
 		printf("memory error");
-		return;
+		return 0;
 	}
 	head->next = NULL;
 	head->line = NULL;
