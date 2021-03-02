@@ -50,6 +50,7 @@ int main() {
 
 		currentNode->next = newElement(currentLine);
 		if (currentNode->next == NULL){
+			printf("memory error");
 			break;
 		}
 		currentNode = currentNode->next;
