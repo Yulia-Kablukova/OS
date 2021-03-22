@@ -1,0 +1,23 @@
+#include <unistd.h>
+#include <sys/types.h>
+#include <iostream>
+
+void print_and_open(){
+        std::cout << "EUID: " << geteuid() << "\n";
+        std::cout << "RID: " << getuid() << "\n";
+        FILE* file = fopen("secret.txt", "r");
+        if (file == NULL){
+                perror("Cannot open file");
+        }
+        fclose(file);
+}
+
+int main(){
+        print_and_open();
+        std::cout << "changing  EUID...\n";
+        if (-1 == setuid(getuid())){
+                perror("setuid: ");
+                return 0;
+        }
+        print_and_open();
+}
