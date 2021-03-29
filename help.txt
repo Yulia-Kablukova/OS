@@ -1,0 +1,2 @@
+Compilation flags: -Wall -Wextra -Werror
+10.4.0.68
