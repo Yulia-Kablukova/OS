@@ -3,8 +3,8 @@
 #include <iostream>
 
 void print_and_open(){
-        std::cout << "EUID: " << geteuid() << "\n";
-        std::cout << "UID: " << getuid() << "\n";
+        printf("EUID: %d\n", geteuid());
+        printf("UID: %d\n", getuid());
         FILE* file = fopen("secret.txt", "r");
         if (file == NULL){
                 perror("Cannot open file");
@@ -16,7 +16,7 @@ void print_and_open(){
 
 int main(){
         print_and_open();
-        std::cout << "changing  EUID...\n";
+        printf("changing  EUID...\n");
         if (-1 == setuid(getuid())){
                 perror("setuid: ");
                 return 0;
