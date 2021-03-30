@@ -20,7 +20,10 @@ int main(int argc, char* argv[])
             printf("uid = %d\neuid = %d\ngid = %d\negid = %d\n\n", getuid(), geteuid(), getgid(), getegid());
             break;
         case 's':
-            setpgid(0, 0);
+            if (setpgid(0, 0) == -1)
+            {
+                perror("Unable to change pgid\n\n");
+            }
             break;
         case 'p':
             printf("pid = %d\nppid = %d\npgid = %d\nsid = %d\n\n", getpid(), getppid(), getpgid(0), getsid(0));
@@ -35,11 +38,17 @@ int main(int argc, char* argv[])
             }
             break;
         case 'c':
-            getrlimit(RLIMIT_CORE, &rlim);
+            if (getrlimit(RLIMIT_CORE, &rlim))
+            {
+                 perror("Unable to get ulimit\n");
+            }
             printf("core size = %ld\n\n", rlim.rlim_cur);
             break;
         case 'C':
-            getrlimit(RLIMIT_CORE, &rlim);
+            if (getrlimit(RLIMIT_CORE, &rlim))
+            {
+                 perror("Unable to get ulimit\n");
+            }
             rlim.rlim_cur = atol(optarg);
             if (setrlimit(RLIMIT_CORE, &rlim) == -1) 
             {
