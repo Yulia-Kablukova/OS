@@ -1,2 +1,4 @@
 Compilation flags: -Wall -Wextra -Werror
 10.4.0.68
+
+g++ lab.c -o lab -Wall -Wextra -Werror
