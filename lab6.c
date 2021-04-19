@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
             printf("Time limit exceeded!\n");
             lseek(fd,0,SEEK_SET);
             while (read(fd, &c, 1) > 0) {
-                putchar(c);
+                write(fd2, &c, 1);
             }
             break;
         }
