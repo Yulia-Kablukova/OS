@@ -29,6 +29,8 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < MAX_SIZE; i++) {
         lengths[i] = -1;
     }
+    
+    offsets[1] = pa;
 
     for (int i = 0; i < size; i++) {
         if (*(pa + i) == '\n') {
@@ -71,6 +73,7 @@ int main(int argc, char *argv[]) {
             printf("Wrong line number!\n");
         } else {
             write(1, offsets[line_number], lengths[line_number]);
+            printf("\n");
         }
     }
 
