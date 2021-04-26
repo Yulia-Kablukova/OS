@@ -50,13 +50,27 @@ int main(int argc, char *argv[]) {
         perror("/dev/tty");
         exit(2);
     }
+    
+    struct timeval start, end;
+    int flg;
 
     while (1) {
         printf("Line number (0 for exit): ");
+        flg = 1;
         fflush(stdout);
-        sleep(5);
+        
+        gettimeofday(&start, NULL);
+        gettimeofday(&end, NULL);
 
-        if (read(fd2, buff, BUFSIZ) == 0) {
+        while (end.tv_sec - start.tv_sec < 5) {
+            if (read(fd2, buff, BUFSIZ) != 0) {
+                flg = 0;
+                break;
+            }
+            gettimeofday(&end, NULL);
+        }
+
+        if (flg) {
             printf("Time limit exceeded!\n");
             for (int i = 0; i < size; i++) {
                 printf("%c", *(pa + i));
