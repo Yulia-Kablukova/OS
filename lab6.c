@@ -49,14 +49,28 @@ int main(int argc, char *argv[]) {
         exit(2);
     }
 
+    struct timeval start, end;
+    int flg;
+
     while (1) {
         printf("Line number (0 for exit): ");
+        flg = 1;
         fflush(stdout);
-        sleep(5);
 
-        if (read(fd2, buff, BUFSIZ) == 0) {
+        gettimeofday(&start, NULL);
+        gettimeofday(&end, NULL);
+
+        while (end.tv_sec - start.tv_sec < 2) {
+            if (read(fd2, buff, BUFSIZ) != 0) {
+                flg = 0;
+                break;
+            }
+            gettimeofday(&end, NULL);
+        }
+        
+        if (flg) {
             printf("Time limit exceeded!\n");
-            lseek(fd,0,SEEK_SET);
+            lseek(fd, 0, SEEK_SET);
             while (read(fd, &c, 1) > 0) {
                 write(fd2, &c, 1);
             }
