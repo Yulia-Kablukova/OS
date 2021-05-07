@@ -4,10 +4,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/mman.h>
+#include <poll.h>
 
 #define MAX_SIZE 100
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     if (argc != 2) {
         printf("Wrong number of arguments\n");
         return 0;
@@ -20,7 +21,7 @@ int main(int argc, char *argv[]) {
     }
 
     int size = lseek(fd, 0, SEEK_END);
-    char *pa = (char *) mmap(0, size, PROT_READ, MAP_SHARED, fd, 0);
+    char* pa = (char*)mmap(0, size, PROT_READ, MAP_SHARED, fd, 0);
 
     int len = 0;
     int line = 1;
@@ -29,7 +30,7 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < MAX_SIZE; i++) {
         lengths[i] = -1;
     }
-    
+
     offsets[1] = pa;
 
     for (int i = 0; i < size; i++) {
@@ -37,47 +38,39 @@ int main(int argc, char *argv[]) {
             lengths[line++] = len;
             offsets[line] = pa + i + 1;
             len = 0;
-        } else {
+        }
+        else {
             len++;
         }
     }
 
     int line_number = 0;
     char buff[MAX_SIZE];
-    int fd2;
-
-    if ((fd2 = open("/dev/tty", O_RDWR | O_NDELAY)) == -1) {
-        perror("/dev/tty");
-        exit(2);
-    }
-    
-    struct timeval start, end;
+    int i;
     int flg;
+    struct pollfd pfds[1];
 
     while (1) {
+
+        pfds[0].fd = 0;
+        pfds[0].events = POLLIN;
         printf("Line number (0 for exit): ");
-        flg = 1;
         fflush(stdout);
-        
-        gettimeofday(&start, NULL);
-        gettimeofday(&end, NULL);
-
-        while (end.tv_sec - start.tv_sec < 5) {
-            if (read(fd2, buff, BUFSIZ) != 0) {
-                flg = 0;
-                break;
-            }
-            gettimeofday(&end, NULL);
-        }
-
-        if (flg) {
+        flg = poll(pfds, 1, 5000);
+        if (!flg) {
             printf("Time limit exceeded!\n");
             for (int i = 0; i < size; i++) {
                 printf("%c", *(pa + i));
             }
             break;
         }
-
+        if (pfds[0].revents & POLLIN) {
+            i = read(0, buff, MAX_SIZE);
+            if (!i) {
+                printf("stdin closed\n");
+                return 0;
+            }
+        }
         line_number = atoi(buff);
 
         if (line_number == 0)
@@ -85,12 +78,12 @@ int main(int argc, char *argv[]) {
 
         if (line_number < 0 || line_number > MAX_SIZE || lengths[line_number] == -1) {
             printf("Wrong line number!\n");
-        } else {
+        }
+        else {
             write(1, offsets[line_number], lengths[line_number]);
             printf("\n");
         }
     }
 
     close(fd);
-    close(fd2);
 }
