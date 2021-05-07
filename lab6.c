@@ -1,3 +1,4 @@
+#include <poll.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <stdio.h>
@@ -6,7 +7,7 @@
 
 #define MAX_SIZE 100
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     if (argc != 2) {
         printf("Wrong number of arguments\n");
         return 0;
@@ -42,49 +43,41 @@ int main(int argc, char *argv[]) {
 
     int line_number = 0;
     char buff[MAX_SIZE];
-    int fd2;
-
-    if ((fd2 = open("/dev/tty", O_RDWR | O_NDELAY)) == -1) {
-        perror("/dev/tty");
-        exit(2);
-    }
-
-    struct timeval start, end;
+    int i;
     int flg;
+    struct pollfd pfds[1];
 
     while (1) {
+
+        pfds[0].fd = 0;
+        pfds[0].events = POLLIN;
         printf("Line number (0 for exit): ");
-        flg = 1;
         fflush(stdout);
-
-        gettimeofday(&start, NULL);
-        gettimeofday(&end, NULL);
-
-        while (end.tv_sec - start.tv_sec < 2) {
-            if (read(fd2, buff, BUFSIZ) != 0) {
-                flg = 0;
-                break;
-            }
-            gettimeofday(&end, NULL);
-        }
-        
-        if (flg) {
+        flg = poll(pfds, 1, 5000);
+        if (!flg) {
             printf("Time limit exceeded!\n");
             lseek(fd, 0, SEEK_SET);
             while (read(fd, &c, 1) > 0) {
-                write(fd2, &c, 1);
+                write(0, &c, 1);
             }
             break;
         }
 
+        if (pfds[0].revents & POLLIN) {
+        i = read(0, buff, MAX_SIZE);
+        if (!i) {
+            printf("stdin closed\n");
+            return 0;
+            }
+        }
         line_number = atoi(buff);
-
         if (line_number == 0)
             return 0;
-
+    
         if (line_number < 0 || line_number > MAX_SIZE || lengths[line_number] == -1) {
             printf("Wrong line number!\n");
-        } else {
+        }
+        else {
             if (lseek(fd, offsets[line_number], SEEK_SET) == -1) {
                 perror("lseek: ");
                 return 0;
@@ -99,5 +92,4 @@ int main(int argc, char *argv[]) {
     }
 
     close(fd);
-    close(fd2);
 }
