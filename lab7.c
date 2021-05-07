@@ -84,6 +84,6 @@ int main(int argc, char* argv[]) {
             printf("\n");
         }
     }
-
+    munmap(0, size);
     close(fd);
 }
