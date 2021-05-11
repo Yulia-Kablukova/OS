@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
             while (c != '\n' && read(fd, &c, 1) > 0) continue;
         }
         if (c == '\n') {
-            lengths[line++] = len;
+            lengths[line++] = len - 1;
             offsets[line] = lseek(fd, 0L, SEEK_CUR);
             if (offsets[line] == -1) {
                 perror("lseek: ");
@@ -102,6 +102,8 @@ int main(int argc, char *argv[]) {
             }
             buff[lengths[line_number]] = '\0';
             write(0, buff, lengths[line_number]);
+            char str[] = "\n";
+            write(0, str, sizeof(str));
         }
     }
 
