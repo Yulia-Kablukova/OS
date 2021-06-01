@@ -40,14 +40,15 @@ int main(){
                         perror("write");
                         return 0;
                 }
-                if (write(f1, line2, strlen(line2)) == -1){
-                        perror("write");
+                write(f1, line2, strlen(line2));
+                if (close(f1) == -1) {
+                        perror("close f1");
                         return 0;
                 }
         }
         else {
                 int child2 = fork();
-                if (child2 < 0){
+                if (child2 < 0) {
                         perror("fork2 failed");
                         return 0;
                 }
@@ -60,8 +61,8 @@ int main(){
                                 perror("dup");
                                 return 0;
                         }
-                        close(fd[0]);
-                        close(fd[1]);
+                        if (close(fd[0]) == -1) perror("close");
+                        if (close(fd[1])== -1) perror("close");
                         int len;
                         while ((len = read(f2, buf, MAX_SIZE))) {
                                 for (int i = 0; i<len; i++){
@@ -69,10 +70,23 @@ int main(){
                                 }
                                 if (write(1, buf, len) == -1){
                                         perror("write");
+                                        return 0;
                                 }
+                        }
+                        if (close(f2) == -1) {
+                                perror("close f2");
+                                return 0;
+                        }
+                }
+                else {
+                        if (close(fd[0]) == -1) {
+                                perror("close fd0");
+                                return 0;
+                        }
+                        if (close(fd[1]) == -1) {
+                                perror("close fd1");
+                                return 0;
                         }
                 }
         }
-        close(fd[0]);
-        close(fd[1]);
 }
