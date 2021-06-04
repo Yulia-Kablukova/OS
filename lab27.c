@@ -19,6 +19,7 @@ int main(int argc, char **argv) {
 
     if ((fout = popen("wc -l", "w")) == NULL) {
         perror("popen");
+        return 0;
     }
 
     while (fgets(line, MAX_SIZE, fin) != NULL) {
