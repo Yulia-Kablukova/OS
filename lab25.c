@@ -3,6 +3,8 @@
 #include <string.h>
 #define MAX_SIZE 1000
 #include <ctype.h>
+#include <sys/wait.h>
+#include <sys/types.h>
 
 int main(){
         int fd[2];
@@ -36,19 +38,16 @@ int main(){
                 }
                 char line[20] = "HeLLo FrOM CHiLd 1\n";
                 char line2[20] = "Hello AGain !\n";
-                if (write(f1, line, strlen(line)) == -1){
+                if (write(1, line, strlen(line)) == -1){
                         perror("write");
                         return 0;
                 }
-                write(f1, line2, strlen(line2));
-                if (close(f1) == -1) {
-                        perror("close f1");
-                        return 0;
-                }
+                write(1, line2, strlen(line2));
+                if (close(f1) == -1) perror("close f1");
         }
         else {
                 int child2 = fork();
-                if (child2 < 0) {
+                if (child2 < 0){
                         perror("fork2 failed");
                         return 0;
                 }
@@ -64,27 +63,27 @@ int main(){
                         if (close(fd[0]) == -1) perror("close");
                         if (close(fd[1])== -1) perror("close");
                         int len;
-                        while ((len = read(f2, buf, MAX_SIZE))) {
+                        while ((len = read(0, buf, MAX_SIZE))) {
                                 for (int i = 0; i<len; i++){
                                         buf[i] = toupper(buf[i]);
                                 }
                                 if (write(1, buf, len) == -1){
                                         perror("write");
-                                        return 0;
                                 }
                         }
-                        if (close(f2) == -1) {
-                                perror("close f2");
-                                return 0;
-                        }
+                        if (close(f2) == -1) perror("close f2");
                 }
                 else {
-                        if (close(fd[0]) == -1) {
+                        if (close(fd[0]) == -1)
                                 perror("close fd0");
+                        if (close(fd[1]) == -1)
+                                perror("close fd1");
+                        if (wait(NULL) == -1){
+                                perror("wait");
                                 return 0;
                         }
-                        if (close(fd[1]) == -1) {
-                                perror("close fd1");
+                        if (wait(NULL) == -1){
+                                perror("wait");
                                 return 0;
                         }
                 }
