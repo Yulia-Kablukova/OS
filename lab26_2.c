@@ -11,6 +11,7 @@ int main(int argc, char** argv) {
 
     if ((file = popen(argv[1], "w")) == NULL) {
         perror("open");
+        return 0;
     }
 
     char line[20] = "HeLLo FrOM CHiLd 1\n";
