@@ -19,6 +19,9 @@ int main(int argc, char **argv) {
 
     if ((fout = popen("wc -l", "w")) == NULL) {
         perror("popen");
+        if (fclose(fin) != 0) {
+            perror("fclose");
+        }
         return 0;
     }
 
