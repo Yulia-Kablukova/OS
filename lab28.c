@@ -12,7 +12,10 @@ int main() {
     FILE *ptrs[2];
     char num[4];
 
-    p2open("/bin/sort -r", ptrs);
+    if (p2open("/bin/sort -r", ptrs) != 0) {
+        perror("p2open");
+        return 0;
+    }
 
     for (int i = 1; i <= 100; i++) {
         sprintf(num, "%2d\n", rand() % 100);
